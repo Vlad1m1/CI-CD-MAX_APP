@@ -31,7 +31,7 @@ jobs:
     - name: 📝 Merge from developer's MAIN branch
       run: |
         git checkout develop
-        git merge --no-ff developer-remote/master -m "Auto-sync from developer-remote/main"
+        git merge --allow-unrelated-histories --no-ff developer-remote/main -m "Auto-sync: merge unrelated histories"
         git push origin develop
 
     - name: 🎯 Merge to main
