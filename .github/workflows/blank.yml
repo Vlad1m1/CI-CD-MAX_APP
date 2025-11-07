@@ -31,11 +31,11 @@ jobs:
     - name: 📝 Merge from developer's MAIN branch
       run: |
         git checkout develop
-        git merge --allow-unrelated-histories --no-ff developer-remote/main -m "Auto-sync: merge unrelated histories"
+        git merge --allow-unrelated-histories --no-ff developer-remote/master -m "Auto-sync: merge unrelated histories"
         git push origin develop
 
     - name: 🎯 Merge to main
       run: |
         git checkout main
-        git merge --no-ff develop -m "Auto-merge: develop to main"
+        git merge --allow-unrelated-histories --no-ff develop -m "Auto-merge: develop to main"
         git push origin main
