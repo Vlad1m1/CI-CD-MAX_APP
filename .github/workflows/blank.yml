@@ -21,21 +21,17 @@ jobs:
         git config user.name "GitHub Actions Bot"
         git config user.email "actions@users.noreply.github.com"
 
-    - name: 🔄 Add PUBLIC remote repository
+    - name: 🔄 Add remote and check branches
       run: |
-        # УДАЛИ СТРОКУ НИЖЕ И ВСТАВЬ РЕАЛЬНЫЙ URL!
-        git remote add developer-remote https://github.com/shurma1/lingua.git
+        git remote add developer-remote https://github.com/username/repository-name.git
         git fetch developer-remote
-        git remote -v  # Покажет все remotes для проверки
-
-    - name: 📝 Check what branches available
-      run: |
+        echo "=== Available branches in remote ==="
         git branch -r | grep developer-remote
 
-    - name: 📝 Merge from developer branch
+    - name: 📝 Merge from developer's MAIN branch
       run: |
         git checkout develop
-        git merge --no-ff developer-remote/main -m "Auto-sync from developer"
+        git merge --no-ff developer-remote/main -m "Auto-sync from developer-remote/main"
         git push origin develop
 
     - name: 🎯 Merge to main
