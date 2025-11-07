@@ -1,11 +1,9 @@
-name: 🚀 Sync from Public Out Repo
+name: 🚀 Sync from Public Repo
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Каждые 30 минут
-  workflow_dispatch:         # Ручной запуск
-  push:
-    branches: [ develop ]
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
 
 jobs:
   sync-and-merge:
@@ -23,20 +21,25 @@ jobs:
         git config user.name "GitHub Actions Bot"
         git config user.email "actions@users.noreply.github.com"
 
-    - name: 🔄 Add and fetch public remote 'out'
+    - name: 🔄 Add PUBLIC remote repository
       run: |
-        git remote add out https://github.com/shurma1/lingua.git
-        git fetch out
-        echo "✅ Remote 'out' added successfully!"
+        # УДАЛИ СТРОКУ НИЖЕ И ВСТАВЬ РЕАЛЬНЫЙ URL!
+        git remote add developer-remote https://github.com/shurma1/lingua.git
+        git fetch developer-remote
+        git remote -v  # Покажет все remotes для проверки
 
-    - name: 📝 Merge from out/develop
+    - name: 📝 Check what branches available
+      run: |
+        git branch -r | grep developer-remote
+
+    - name: 📝 Merge from developer branch
       run: |
         git checkout develop
-        git merge --no-ff out/main -m "Auto-sync from out/develop"
+        git merge --no-ff developer-remote/main -m "Auto-sync from developer"
         git push origin develop
 
     - name: 🎯 Merge to main
       run: |
         git checkout main
-        git merge --no-ff develop -m "Auto-merge: develop to main [$(date +%Y-%m-%d)]"
+        git merge --no-ff develop -m "Auto-merge: develop to main"
         git push origin main
