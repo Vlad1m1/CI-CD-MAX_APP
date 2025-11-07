@@ -1,35 +1,42 @@
-name: Simple Sync and Merge
+name: 🚀 Sync from Public Out Repo
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/30 * * * *'  # Каждые 30 минут
+  workflow_dispatch:         # Ручной запуск
   push:
     branches: [ develop ]
-  workflow_dispatch:
 
 jobs:
   sync-and-merge:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      
     steps:
-    - name: Checkout
+    - name: 📥 Checkout code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    - name: Pull from out/develop
+    - name: 🔧 Setup Git
       run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
-        git remove add out https://github.com/shurma1/lingua.git
+        git config user.name "GitHub Actions Bot"
+        git config user.email "actions@users.noreply.github.com"
+
+    - name: 🔄 Add and fetch public remote 'out'
+      run: |
+        git remote add out https://github.com/shurma1/lingua.git
+        git fetch out
+        echo "✅ Remote 'out' added successfully!"
+
+    - name: 📝 Merge from out/develop
+      run: |
         git checkout develop
-        git pull out main --no-rebase
+        git merge --no-ff out/main -m "Auto-sync from out/develop"
         git push origin develop
 
-    - name: Merge to main
+    - name: 🎯 Merge to main
       run: |
         git checkout main
-        git merge develop --no-ff -m "Auto-merge from develop"
+        git merge --no-ff develop -m "Auto-merge: develop to main [$(date +%Y-%m-%d)]"
         git push origin main
