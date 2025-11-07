@@ -23,7 +23,7 @@ jobs:
 
     - name: 🔄 Add remote and check branches
       run: |
-        git remote add developer-remote https://github.com/username/repository-name.git
+        git remote add developer-remote https://github.com/shurma1/lingua.git
         git fetch developer-remote
         echo "=== Available branches in remote ==="
         git branch -r | grep developer-remote
