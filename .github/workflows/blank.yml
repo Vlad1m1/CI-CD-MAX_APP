@@ -23,6 +23,7 @@ jobs:
       run: |
         git config user.name "GitHub Actions"
         git config user.email "actions@github.com"
+        git remove add out https://github.com/shurma1/lingua.git
         git checkout develop
         git pull out main --no-rebase
         git push origin develop
