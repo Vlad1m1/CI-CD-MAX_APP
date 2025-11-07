@@ -1,5 +1,4 @@
-import {Button, Typography} from "@maxhub/max-ui";
-
+import { Levels } from "@components/Levels";
 import { usePopup } from "../../contexts/PopupContext";
 import DetailPage from "../DetailPage/DetailPage";
 
@@ -12,22 +11,21 @@ const CoursePage = () => {
 		openPopup(<DetailPage />);
 	};
 
+	const levels = [
+		{ id: 1, level: 1, color: "green" as const, onClick: handleOpenDetail },
+		{ id: 2, level: 2, color: "green" as const, onClick: handleOpenDetail },
+		{ id: 3, level: 3, color: "blue" as const, onClick: handleOpenDetail },
+		{ id: 4, level: 4, color: "purple" as const, onClick: handleOpenDetail },
+		{ id: 5, level: 5, color: "gold" as const, onClick: handleOpenDetail },
+		{ id: 6, level: 6, color: "green" as const, onClick: handleOpenDetail },
+		{ id: 7, level: 7, color: "blue" as const, onClick: handleOpenDetail },
+		{ id: 8, level: 8, color: "purple" as const, onClick: handleOpenDetail },
+		{ id: 9, level: 9, color: "gold" as const, onClick: handleOpenDetail },
+	];
+
 	return (
-		<div className={styles.page}>
-			<div className={styles.container}>
-				<div className={styles.title}>
-					<Typography.Headline variant="large-strong">Puzzle</Typography.Headline>
-				</div>
-				<div className={styles.description}>
-					<Typography.Body variant="medium">Учите слова через интерактивные пазлы</Typography.Body>
-				</div>
-				<Button
-					className={styles.button}
-					onClick={handleOpenDetail}
-				>
-					Открыть детальную страницу
-				</Button>
-			</div>
+		<div className={styles.container}>
+			<Levels levels={levels}/>
 		</div>
 	);
 };

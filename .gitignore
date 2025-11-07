@@ -29,6 +29,8 @@ server/npm-debug.log*
 server/node_modules
 server/dist
 
+server/static
+
 server/*.local
 
 server/.vscode/*

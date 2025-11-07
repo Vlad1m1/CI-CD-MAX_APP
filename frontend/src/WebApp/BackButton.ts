@@ -1,4 +1,4 @@
-import {WebAppRoot} from "./WebApp.ts";
+import {WebAppRoot} from "./WebApp";
 
 type CallbackFunction = () => void;
 

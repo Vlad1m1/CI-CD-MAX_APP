@@ -1,0 +1,9 @@
+
+.page {
+  min-height: calc(100vh - 83px);
+  overflow-y: hidden;
+}
+
+:global(.dev) .page {
+  min-height: calc(100vh - 83px - var(--dev-header-height));
+}

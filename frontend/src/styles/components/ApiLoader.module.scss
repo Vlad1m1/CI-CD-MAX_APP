@@ -1,0 +1,58 @@
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 5px;
+  background: transparent;
+  overflow: hidden;
+
+  z-index: var(--z-index-loader);
+}
+
+.loader::before,
+.loader::after {
+  content: "";
+  position: absolute;
+  height: 100%;
+  transform: translateX(-100%);
+}
+
+.loader::before {
+  background: var(--accent-color);
+}
+.loader::after {
+  background: var(--sub-accent-color);
+}
+
+.loader::before {
+  width: 100%;
+  animation: barSlow var(--animation-duration) ease-out infinite;
+}
+
+.loader::after {
+  width: 50%;
+  animation: barFast var(--animation-duration) ease-in-out infinite;
+}
+
+@keyframes barSlow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes barFast {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+:global(.dev) .loader {
+  top: var(--dev-header-height);
+}

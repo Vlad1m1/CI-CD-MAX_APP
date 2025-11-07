@@ -1,17 +1,21 @@
-import {useRef} from "react";
+import {useRef, useState} from "react";
 
-import {ImpactStyle} from "../../WebApp/types/ImpactStyle";
-import WebApp from "../../WebApp/WebApp";
-import ColoredLottie from "../ColoredLottie/ColoredLottie";
+import {ImpactStyle} from "@WebApp/types/ImpactStyle";
+import WebApp from "@WebApp/WebApp";
+import ColoredLottie from "@components/ColoredLottie";
 
-import styles from "./TabBar.module.scss";
+import styles from "@styles/components/TabBar/TabBar.module.scss";
 
 import type {LottieRefCurrentProps} from "lottie-react";
+
+const MULTIPLY_CLICK_COUNT = 10;
+const MULTIPLY_CLICK_MAX_DELAY_MS = 500;
 
 export interface TabConfig {
 	id: string;
 	label: string;
 	animation: object;
+	onMultiplyClick?: () => void;
 }
 
 interface TabBarProps {
@@ -22,7 +26,10 @@ interface TabBarProps {
 
 const TabBar = ({ activeTab, onTabChange, tabs }: TabBarProps) => {
 	const tabRefs = useRef<Map<string, LottieRefCurrentProps | null>>(new Map());
-
+	
+	const [tabClickCount, setTabClickCount] = useState<{id: string | null, clickCount: number}>({id: null, clickCount: 0});
+	const timerRef = useRef<number | null>(null);
+	
 	const getRefForTab = (tabId: string) => {
 		if (!tabRefs.current.has(tabId)) {
 			tabRefs.current.set(tabId, null);
@@ -37,7 +44,38 @@ const TabBar = ({ activeTab, onTabChange, tabs }: TabBarProps) => {
 	};
 
 	const handleTabClick = (tabId: string) => {
+		const currentTab = tabs.find(tab => tab.id === tabId) as TabConfig;
+		const isMultiplyClickActive = !! currentTab.onMultiplyClick;
+		
+		if (timerRef.current !== null) {
+			clearTimeout(timerRef.current);
+		}
+		
+		if(isMultiplyClickActive) {
+			let newClickCount = 1;
+			
+			if(tabId === tabClickCount.id) {
+				newClickCount = tabClickCount.clickCount + 1;
+			}
+			
+			setTabClickCount({id: tabId, clickCount: newClickCount});
+			
+			if(newClickCount >= MULTIPLY_CLICK_COUNT) {
+				currentTab.onMultiplyClick?.();
+				setTabClickCount({id: null, clickCount: 0});
+				WebApp.HapticFeedback.impactOccurred(ImpactStyle.MEDIUM);
+				return;
+			}
+			
+			timerRef.current = window.setTimeout(() => {
+				setTabClickCount({id: null, clickCount: 0});
+			}, MULTIPLY_CLICK_MAX_DELAY_MS);
+		} else if(tabClickCount.id !== null) {
+			setTabClickCount({id: null, clickCount: 0});
+		}
+		
 		if(activeTab === tabId) return;
+		
 		onTabChange(tabId);
 		WebApp.HapticFeedback.impactOccurred(ImpactStyle.LIGHT);
 		setTimeout(() => {
