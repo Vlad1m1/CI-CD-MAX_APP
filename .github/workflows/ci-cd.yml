@@ -68,34 +68,23 @@ jobs:
 
     - name: Save Docker image
       run: |
-        # Сохраняем Docker образ в tar файл для передачи на сервер
         docker save my-app:latest > image.tar
 
     - name: Deploy to production server
       uses: appleboy/ssh-action@v1.0.3
       with:
-        # Хост сервера из секретов GitHub
         host: ${{ secrets.PRODUCTION_SERVER_HOST }}
-        # Пользователь для подключения из секретов
         username: ${{ secrets.PRODUCTION_SERVER_USER }}
-        # Приватный SSH ключ из секретов
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        # Команды, которые выполнятся на удаленном сервере
         script: |
-          # Выводим сообщение о начале деплоя
           echo "Deploying application..."
           
-          # Загружаем Docker образ из tar файла
           docker load -i /tmp/image.tar
-          
-          # Останавливаем старый контейнер (если существует)
-          # || true - чтобы команда не падала если контейнера нет
+                    
           docker stop my-app-production || true
           
-          # Удаляем старый контейнер (если существует)
           docker rm my-app-production || true
           
-          # Запускаем новый контейнер с параметрами:
           docker run -d \                    # -d = detached mode (в фоне)
             --name my-app-production \       # Имя контейнера
             -p 80:3000 \                    # Проброс порта 80 host → 3000 container
@@ -104,10 +93,8 @@ jobs:
             --restart unless-stopped \      # Автоматически перезапускать если упал
             my-app:latest                   # Используемый образ
           
-          # Очищаем Docker систему (удаляем неиспользуемые образы, контейнеры)
           docker system prune -f
           
-          # Удаляем временный tar файл
           rm /tmp/image.tar
           
           echo "Deployment completed successfully!"
