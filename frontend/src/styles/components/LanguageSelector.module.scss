@@ -1,0 +1,32 @@
+
+.cellList {
+  padding: 0 !important;
+}
+
+.emoji {
+  font-size: 25px;
+}
+
+.disabled {
+  cursor: not-allowed !important;
+}
+
+.checkmark, .checkboxSkeleton {
+  border-radius: 50%;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  background: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkboxSkeleton {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--stroke-separator-primary);
+
+}
