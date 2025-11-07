@@ -1,6 +1,8 @@
 import { useState, type ReactNode } from "react";
 
 import TabBar, { type TabConfig } from "../TabBar/TabBar";
+import styles from "./TabNavigator.module.scss";
+import PageContainer from "../PageContainer/PageContainer";
 
 export interface TabNavigatorConfig extends TabConfig {
 	component: ReactNode;
@@ -25,15 +27,20 @@ const TabNavigator = ({ tabs, defaultTabId }: TabNavigatorProps) => {
 		return activeTabConfig?.component || null;
 	};
 
-	const tabsConfig: TabConfig[] = tabs.map(({ id, label, animation }) => ({
+	const tabsConfig: TabConfig[] = tabs.map(({ id, label, animation, onMultiplyClick }) => ({
 		id,
 		label,
 		animation,
+		onMultiplyClick,
 	}));
 
 	return (
 		<div>
-			{renderActivePage()}
+			<div className={styles.pageContainer}>
+				<PageContainer>
+					{renderActivePage()}
+				</PageContainer>
+			</div>
 			<TabBar activeTab={activeTab} onTabChange={handleTabChange} tabs={tabsConfig} />
 		</div>
 	);

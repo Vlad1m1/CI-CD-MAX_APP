@@ -5,11 +5,11 @@ import styles from "./PageTransition.module.scss";
 
 interface PageTransitionProps {
 	isOpen: boolean;
-	onClose: () => void;
+	onClose?: () => void;
 	children: ReactNode;
 }
 
-const PageTransition = ({ isOpen, onClose, children }: PageTransitionProps) => {
+const PageTransition = ({ isOpen, children }: PageTransitionProps) => {
 	const [isAnimating, setIsAnimating] = useState(false);
 	const [shouldRender, setShouldRender] = useState(false);
 
@@ -28,24 +28,11 @@ const PageTransition = ({ isOpen, onClose, children }: PageTransitionProps) => {
 	return (
 		<div
 			className={`${styles.overlay} ${isAnimating ? styles.active : ""}`}
-			onClick={onClose}
 		>
 			<div
 				className={`${styles.page} ${isAnimating ? styles.active : ""}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<button className={styles.backButton} onClick={onClose}>
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-						<path
-							d="M15 18L9 12L15 6"
-							stroke="currentColor"
-							strokeWidth="2"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-						/>
-					</svg>
-					<span>Назад</span>
-				</button>
 				<div className={styles.content}>
 					{children}
 				</div>

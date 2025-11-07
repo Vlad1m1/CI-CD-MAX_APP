@@ -1,9 +1,9 @@
-import {HAPTIC_AVAILABLE_PLATFORMS} from "./config.ts";
-import {WebAppRoot} from "./WebApp.ts";
+import {HAPTIC_AVAILABLE_PLATFORMS} from "./config";
+import {WebAppRoot} from "./WebApp";
 
-import type {ImpactStyle} from "./types/ImpactStyle.ts";
-import type {NotificationType} from "./types/NotificationType.ts";
-import type {Platform} from "./types/Platform.ts";
+import type {ImpactStyle} from "./types/ImpactStyle";
+import type {NotificationType} from "./types/NotificationType";
+import type {Platform} from "./types/Platform";
 
 
 class HapticFeedback {

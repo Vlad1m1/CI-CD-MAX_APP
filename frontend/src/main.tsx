@@ -3,8 +3,8 @@ import { StrictMode } from "react";
 import { MaxUI } from "@maxhub/max-ui";
 import { createRoot } from "react-dom/client";
 
-// Setup dev mode BEFORE any other app imports
 import "./setupDevMode";
+import "virtual:svg-icons-register";
 
 import App from "./App";
 import {HistoryProvider} from "./contexts/HistoryContext";
