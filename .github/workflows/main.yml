@@ -1,0 +1,77 @@
+name: Simple Tar Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build and save images
+        run: |
+          docker-compose --build
+          
+          docker save lingua-backend:latest -o backend.tar
+          docker save lingua-frontend:latest -o frontend.tar
+          
+          # Создаем скрипт деплоя
+          cat > deploy.sh << 'EOF'
+          #!/bin/bash
+          set -e
+          echo "🔄 Loading Docker images..."
+          docker load -i backend.tar
+          docker load -i frontend.tar
+          
+          echo "🚀 Starting/updating containers (preserving database)..."
+          # Останавливаем только app-контейнеры, БД продолжает работать
+          docker-compose -f docker-compose.yml stop lingua-backend lingua-frontend || true
+          
+          # Запускаем с обновленными образами
+          docker-compose -f docker-compose.yml up -d lingua-backend lingua-frontend
+          
+          echo "✅ App deployment complete!"
+          docker images | grep -E "(lingua-backend|lingua-frontend)"
+          EOF
+
+      - name: Prepare initial deployment if needed
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_SERVER_HOST }}
+          username: ${{ secrets.PRODUCTION_SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/app
+            # Если это первый деплой, создаем БД
+            if [ ! -f .initialized ]; then
+              echo "🔄 First deployment - setting up database..."
+              docker-compose -f docker-compose.yml up -d database
+              sleep 30
+              touch .initialized
+            else
+              echo "✅ Database already initialized - preserving data"
+            fi
+
+      - name: Upload files to server
+        uses: appleboy/scp-action@v0.1.3
+        with:
+          host: ${{ secrets.PRODUCTION_SERVER_HOST }}
+          username: ${{ secrets.PRODUCTION_SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "backend.tar,frontend.tar,deploy.sh,docker-compose.yml"
+          target: "/opt/app/"
+          strip_components: 1
+
+      - name: Execute deployment
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_SERVER_HOST }}
+          username: ${{ secrets.PRODUCTION_SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/app
+            chmod +x deploy.sh
+            ./deploy.sh
