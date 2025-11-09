@@ -13,7 +13,7 @@ jobs:
 
       - name: Build and save images
         run: |
-          docker-compose --build
+          docker compose --build
           
           docker save lingua-backend:latest -o backend.tar
           docker save lingua-frontend:latest -o frontend.tar
@@ -28,10 +28,10 @@ jobs:
           
           echo "🚀 Starting/updating containers (preserving database)..."
           # Останавливаем только app-контейнеры, БД продолжает работать
-          docker-compose -f docker-compose.yml stop lingua-backend lingua-frontend || true
+          docker compose -f docker-compose.yml stop lingua-backend lingua-frontend || true
           
           # Запускаем с обновленными образами
-          docker-compose -f docker-compose.yml up -d lingua-backend lingua-frontend
+          docker compose -f docker-compose.yml up -d lingua-backend lingua-frontend
           
           echo "✅ App deployment complete!"
           docker images | grep -E "(lingua-backend|lingua-frontend)"
@@ -48,7 +48,7 @@ jobs:
             # Если это первый деплой, создаем БД
             if [ ! -f .initialized ]; then
               echo "🔄 First deployment - setting up database..."
-              docker-compose -f docker-compose.yml up -d database
+              docker compose -f docker-compose.yml up -d database
               sleep 30
               touch .initialized
             else
