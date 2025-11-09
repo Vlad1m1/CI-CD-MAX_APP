@@ -40,9 +40,9 @@ jobs:
       - name: Prepare initial deployment if needed
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.PRODUCTION_SERVER_HOST }}
-          username: ${{ secrets.PRODUCTION_SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ PRODUCTION.PRODUCTION_SERVER_HOST }}
+          username: ${{ PRODUCTION.PRODUCTION_SERVER_USER }}
+          key: ${{ PRODUCTION.SSH_PRIVATE_KEY }}
           script: |
             cd /opt/app
             # Если это первый деплой, создаем БД
@@ -58,9 +58,9 @@ jobs:
       - name: Upload files to server
         uses: appleboy/scp-action@v0.1.3
         with:
-          host: ${{ secrets.PRODUCTION_SERVER_HOST }}
-          username: ${{ secrets.PRODUCTION_SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ PRODUCTION.PRODUCTION_SERVER_HOST }}
+          username: ${{ PRODUCTION.PRODUCTION_SERVER_USER }}
+          key: ${{ PRODUCTION.SSH_PRIVATE_KEY }}
           source: "backend.tar,frontend.tar,deploy.sh,docker-compose.yml"
           target: "/opt/app/"
           strip_components: 1
@@ -68,9 +68,9 @@ jobs:
       - name: Execute deployment
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.PRODUCTION_SERVER_HOST }}
-          username: ${{ secrets.PRODUCTION_SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ PRODUCTION.PRODUCTION_SERVER_HOST }}
+          username: ${{ PRODUCTION.PRODUCTION_SERVER_USER }}
+          key: ${{ PRODUCTION.SSH_PRIVATE_KEY }}
           script: |
             cd /opt/app
             chmod +x deploy.sh
