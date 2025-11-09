@@ -13,10 +13,10 @@ jobs:
 
       - name: Build and save images
         run: |
-          docker compose --build
+          docker compose build
           
-          docker save lingua-backend:latest -o backend.tar
-          docker save lingua-frontend:latest -o frontend.tar
+          docker save backend:latest -o backend.tar
+          docker save frontend:latest -o frontend.tar
           
           # Создаем скрипт деплоя
           cat > deploy.sh << 'EOF'
