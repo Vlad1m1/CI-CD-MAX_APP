@@ -11,41 +11,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build and save images
-        run: |
-          docker compose build
-          
-          docker save backend:latest -o backend.tar
-          docker save frontend:latest -o frontend.tar
-          
-          # Создаем скрипт деплоя
-          cat > deploy.sh << 'EOF'
-          #!/bin/bash
-          set -e
-          echo "🔄 Loading Docker images..."
-          docker load -i backend.tar
-          docker load -i frontend.tar
-          
-          echo "🚀 Starting/updating containers (preserving database)..."
-          # Останавливаем только app-контейнеры, БД продолжает работать
-          docker compose -f docker-compose.yml stop lingua-backend lingua-frontend || true
-          
-          # Запускаем с обновленными образами
-          docker compose -f docker-compose.yml up -d lingua-backend lingua-frontend
-          
-          echo "✅ App deployment complete!"
-          docker images | grep -E "(lingua-backend|lingua-frontend)"
-          EOF
-
-      - name: Upload files to server
-        uses: appleboy/scp-action@v0.1.4
+      - name: Build and push docker images
+        uses: mr-smithers-excellent/docker-build-push@v6.4
         with:
-          host: ${{ secrets.SERVER_HOST }}  
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.KEY }}
-          source: "backend.tar,frontend.tar,deploy.sh,docker-compose.yml"
-          target: "/opt/app/"
-          strip_components: 1
+          image: vlad1m1/max-app
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Execute deployment
         uses: appleboy/ssh-action@v1.2.3
@@ -55,5 +27,8 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd /opt/app
-            chmod +x deploy.sh
-            ./deploy.sh
+            docker stop vlad1m1/max-app-frontend vlad1m1/max-app-backend
+            docker rm vlad1m1/max-app-frontend vlad1m1/max-app-backend
+            docker login -u {{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker pull vlad1m1/max-app:latest
+            docker run -d -p 80:80 vlad1m1/max-app:latest
