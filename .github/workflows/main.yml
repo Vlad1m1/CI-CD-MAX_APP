@@ -17,7 +17,6 @@ jobs:
           
           docker save backend:latest -o backend.tar
           docker save frontend:latest -o frontend.tar
-          docker save postgres:latest -o postgres.tar
           
           # Создаем скрипт деплоя
           cat > deploy.sh << 'EOF'
@@ -26,17 +25,16 @@ jobs:
           echo "🔄 Loading Docker images..."
           docker load -i backend.tar
           docker load -i frontend.tar
-          docker load -i postgres.tar
           
           echo "🚀 Starting/updating containers (preserving database)..."
           # Останавливаем только app-контейнеры, БД продолжает работать
-          docker compose -f docker-compose.yml stop lingua-backend lingua-frontend lingua-postgres || true
+          docker compose -f docker-compose.yml stop lingua-backend lingua-frontend || true
           
           # Запускаем с обновленными образами
-          docker compose -f docker-compose.yml up -d lingua-backend lingua-frontend lingua-postgres
+          docker compose -f docker-compose.yml up -d lingua-backend lingua-frontend
           
           echo "✅ App deployment complete!"
-          docker images | grep -E "(lingua-backend|lingua-frontend|lingua-postgres)"
+          docker images | grep -E "(lingua-backend|lingua-frontend)"
           EOF
 
       - name: Upload files to server
@@ -45,7 +43,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}  
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.KEY }}
-          source: "backend.tar,frontend.tar,postgres.tar,deploy.sh,docker-compose.yml"
+          source: "backend.tar,frontend.tar,deploy.sh,docker-compose.yml"
           target: "/opt/app/"
           strip_components: 1
 
