@@ -13,10 +13,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to VPS
-        run: |
-          ssh -i ${{ secrets.SSH_KEY }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-            cd /opt/myapp && \
-            git pull && \
-            docker compose pull && \
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true
+          script: |
+            cd /opt/myapp
+            git pull
+            docker compose pull
             docker compose up -d --remove-orphans
-          "
