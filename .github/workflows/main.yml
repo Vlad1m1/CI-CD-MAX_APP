@@ -20,7 +20,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script_stop: true
           script: |
-            cd /opt/myapp
+            cd /opt/app
             git pull
             docker compose pull
             docker compose up -d --remove-orphans
