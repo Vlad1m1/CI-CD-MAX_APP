@@ -1,7 +1,5 @@
 name: CD - Deploy to VPS
 
-runs-on: self-hosted
-
 on:
   push:
     branches: ["main"]
@@ -11,22 +9,29 @@ if: false
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: 22
-          key: ${{ secrets.SSH_KEY }}
-          script_stop: true
+      - name: Update repository on server
+        with:  
           script: |
-            cd /opt/app
-            git pull
-            docker compose pull
-            docker compose up -d --remove-orphans
+            cd ~/app
+            git pull origin master
+
+      - name: Stopping docker containers and delete old images
+        with:
+          script: |
+            docker stop frontend backend
+            docker rm frontend backend
+            docker system prune
+      
+      - name: Build and run new images.
+        with:
+          script: |
+            cd ~/app/frontend
+            docker build frontend:latest .
+            docker run -d --name frontend -p 80:80 frontend:latest
+            cd ../server
+            docker build backend:latest
+            docker run -d --name backend -p 3000:3000 backend:latest
+
