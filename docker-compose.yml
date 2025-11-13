@@ -1,19 +1,21 @@
 services:
   frontend:
-    image: frontend:latest
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: ghcr.io/vlad1m1/frontend:latest
     ports:
       - "80:80"
+    environment:
+      - API_URL=http://backend:3000
     depends_on:
       - backend
 
   backend:
-    image: backend:latest
     build:
       context: ./server
       dockerfile: Dockerfile
+    image: ghcr.io/vlad1m1/backend:latest
     ports:
       - "3000:3000"
     env_file:
